@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "backend",
+      "runtimeExecutable": "E:\\LogiTrace\\backend\\.venv\\Scripts\\python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "app.main:app", "--app-dir", "E:\\LogiTrace\\backend", "--port", "8000", "--reload", "--reload-dir", "E:\\LogiTrace\\backend\\app"],
+      "cwd": "E:\\LogiTrace\\backend",
+      "port": 8000
+    },
+    {
+      "name": "frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "E:\\LogiTrace\\frontend"],
+      "cwd": "E:\\LogiTrace\\frontend",
+      "port": 3000
+    }
+  ]
+}
