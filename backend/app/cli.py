@@ -6,6 +6,7 @@ Uso:
     python -m app.cli build-network       # constrói uma nova versão do grafo multimodal
     python -m app.cli refresh-stats       # recalcula agregações territoriais pré-calculadas
     python -m app.cli setup               # download + ingest + build-network
+    python -m app.cli deploy-init         # extensões + migrações; dispara o setup em segundo plano se o banco estiver vazio
 """
 
 from __future__ import annotations
@@ -62,6 +63,30 @@ def cmd_build_network() -> None:
         log.info("versão %s: %s", v.id, v.stats)
 
 
+def cmd_deploy_init() -> None:
+    """Prepara o banco na nuvem: PostGIS, migrações e, se não houver dados, o setup completo em segundo plano."""
+    import subprocess
+    import sys
+
+    from alembic.config import Config
+    from sqlalchemy import text
+
+    from alembic import command
+    from app.core.config import BACKEND_DIR
+    from app.db.session import get_engine
+
+    with get_engine().begin() as conn:
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
+    command.upgrade(Config(str(BACKEND_DIR / "alembic.ini")), "head")
+    with session_scope() as db:
+        has_data = db.execute(text("SELECT EXISTS (SELECT 1 FROM network_version)")).scalar()
+    if has_data:
+        log.info("banco já populado; setup ignorado")
+        return
+    log.info("banco vazio: iniciando setup em segundo plano")
+    subprocess.Popen([sys.executable, "-m", "app.cli", "setup"], start_new_session=True)
+
+
 def main() -> None:
     configure_logging()
     p = argparse.ArgumentParser(prog="logitrace")
@@ -73,6 +98,7 @@ def main() -> None:
     sub.add_parser("build-network")
     sub.add_parser("refresh-stats")
     sub.add_parser("setup")
+    sub.add_parser("deploy-init")
     args = p.parse_args()
     if args.cmd == "download":
         log.info("baixados: %s", download_all(get_settings().raw_dir, force=args.force))
@@ -88,6 +114,8 @@ def main() -> None:
         cmd_ingest(["territory", "facilities", "terminals", "segments", "flows"])
         cmd_refresh_stats()
         cmd_build_network()
+    elif args.cmd == "deploy-init":
+        cmd_deploy_init()
 
 
 if __name__ == "__main__":

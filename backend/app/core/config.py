@@ -5,6 +5,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -34,6 +35,15 @@ class Settings(BaseSettings):
 
     # Otimização
     solver_time_limit_s: float = 60.0
+
+    @field_validator("database_url", "test_database_url")
+    @classmethod
+    def _psycopg_driver(cls, v: str) -> str:
+        # Provedores (Render, Neon) entregam postgres:// ou postgresql://; o SQLAlchemy precisa do driver psycopg
+        for prefix in ("postgres://", "postgresql://"):
+            if v.startswith(prefix):
+                return "postgresql+psycopg://" + v[len(prefix):]
+        return v
 
 
 @lru_cache
