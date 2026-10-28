@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.db.session import get_db
-from app.network.builder import latest_version_id
+from app.network.versions import latest_version_id
 from app.network.engine import NetworkGraph, get_graph
 
 DB = Annotated[Session, Depends(get_db)]

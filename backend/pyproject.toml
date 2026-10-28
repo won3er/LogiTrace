@@ -1,0 +1,27 @@
+[project]
+name = "logitrace-api"
+version = "1.0.0"
+requires-python = ">=3.11"
+# Dependências de produção da API (fonte única; requirements.txt é gerado a partir daqui para pip)
+dependencies = [
+    "fastapi==0.162.0",
+    "pydantic==2.14.1",
+    "pydantic-settings==2.16.1",
+    "python-multipart==0.0.32",
+    "SQLAlchemy==2.1.6",
+    "GeoAlchemy2==0.20.0",
+    "psycopg[binary]==3.3.6",
+    "shapely==2.2.0",
+    "numpy==2.4.6",
+    "scipy==1.17.1",
+    "networkx==3.6.1",
+    "ortools==9.15.6755",
+    "pandas==3.1.0",
+    "simpy==4.1.2",
+    "matplotlib==3.11.2",
+    "reportlab==5.1.0",
+    "openpyxl==3.1.5",
+]
+
+[tool.vercel]
+entrypoint = "app.main:app"

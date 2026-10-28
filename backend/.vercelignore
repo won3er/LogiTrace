@@ -1,0 +1,13 @@
+.venv
+data
+tests
+alembic
+__pycache__
+.env
+.env.local
+.vercel
+*.log
+.pytest_cache
+.ruff_cache
+pytest.ini
+requirements-dev.txt

@@ -7,8 +7,12 @@ import io
 from datetime import datetime
 from typing import Any
 
+import os
+import tempfile
+
 import matplotlib
 
+os.environ.setdefault("MPLCONFIGDIR", tempfile.gettempdir())  # sistema de arquivos somente leitura na Vercel
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from reportlab.lib import colors  # noqa: E402

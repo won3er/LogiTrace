@@ -10,7 +10,7 @@ $root = Split-Path -Parent $PSScriptRoot
 Push-Location (Join-Path $root "backend")
 if (-not (Test-Path ".venv")) { py -3.11 -m venv .venv }
 .\.venv\Scripts\python -m pip install --upgrade pip
-.\.venv\Scripts\pip install -r requirements.txt
+.\.venv\Scripts\pip install -r requirements-dev.txt
 .\.venv\Scripts\alembic upgrade head
 .\.venv\Scripts\python -m app.cli setup     # download + ingestão + agregações + grafo
 Pop-Location

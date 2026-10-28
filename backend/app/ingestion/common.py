@@ -10,9 +10,8 @@ from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-import geopandas as gpd
 from shapely.geometry import MultiLineString, MultiPolygon
 from shapely.geometry.base import BaseGeometry
 from shapely.validation import make_valid
@@ -21,6 +20,9 @@ from sqlalchemy.orm import Session
 
 from app.db.base import utcnow
 from app.models import DataSource, Facility, ImportRun, InfraSegment
+
+if TYPE_CHECKING:
+    import geopandas as gpd
 
 log = logging.getLogger("logitrace.ingestion")
 
@@ -64,7 +66,7 @@ def in_brazil(x: float, y: float) -> bool:
     return minx <= x <= maxx and miny <= y <= maxy
 
 
-def to_wgs84(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+def to_wgs84(gdf: "gpd.GeoDataFrame") -> "gpd.GeoDataFrame":
     """Garante SRID 4326. SIRGAS 2000 (4674) e WGS84 diferem < 1 m, mas a transformação é explícita."""
     if gdf.crs is None:
         raise ValueError("Camada sem sistema de referência espacial definido (.prj ausente)")

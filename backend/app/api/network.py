@@ -236,6 +236,11 @@ def nearest(db: DB, lon: float, lat: float, kind: Literal["segment", "municipali
 @router.post("/build")
 def build(db: DB) -> dict[str, Any]:
     """Constrói nova versão do grafo (ex.: após importar instalações do usuário)."""
+    from app.core.config import get_settings
+
+    if not get_settings().allow_network_build:
+        raise HTTPException(409, "Construção da rede indisponível neste ambiente: rode `python -m app.cli build-network` "
+                                 "na instalação completa e publique o banco.")
     from app.network.builder import build_network
     from app.network.engine import clear_cache
 

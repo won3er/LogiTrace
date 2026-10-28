@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -31,9 +33,24 @@ class Settings(BaseSettings):
     max_page_size: int = 500
     max_features_per_request: int = 20000
     job_workers: int = 2
+    # "thread": tarefas pesadas em segundo plano (servidor tradicional);
+    # "inline": executadas dentro da própria requisição (Vercel/serverless, onde threads morrem após a resposta)
+    job_mode: str = "thread"
+    # Se definido, a API só aceita requisições com o cabeçalho x-logitrace-key igual a este valor
+    internal_api_secret: str = ""
+    # Reconstruir o grafo exige GeoPandas/GDAL, disponíveis só na instalação completa
+    allow_network_build: bool = True
 
     # Otimização
     solver_time_limit_s: float = 60.0
+
+    @model_validator(mode="before")
+    @classmethod
+    def _strip(cls, data: Any) -> Any:
+        """Remove BOM e espaços que ferramentas de linha de comando podem inserir nas variáveis de ambiente."""
+        if isinstance(data, dict):
+            return {k: v.strip().lstrip("﻿").strip() if isinstance(v, str) else v for k, v in data.items()}
+        return data
 
 
 @lru_cache

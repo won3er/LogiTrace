@@ -23,7 +23,7 @@ from app.core.assumptions import load_assumptions
 from app.db.base import utcnow
 from app.models import Facility, Scenario, ScenarioChange, ScenarioRun
 from app.network.analysis import CAPITALS, municipality_info
-from app.network.builder import latest_version_id
+from app.network.versions import latest_version_id
 from app.network.engine import Metric, ModalMode, NetworkGraph, get_graph, haversine_km
 from app.optimization.data import Candidate, DemandSpec, ProblemData, build_demand
 from app.optimization.solvers import transportation

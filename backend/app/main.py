@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hmac
 import logging
 import time
 from collections.abc import AsyncIterator
@@ -44,6 +45,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(GZipMiddleware, minimum_size=2048)
+
+
+@app.middleware("http")
+async def internal_key(request: Request, call_next):  # type: ignore[no-untyped-def]
+    """Em produção, só o servidor do site (que conhece a chave) fala com a API; /api/health fica aberto."""
+    secret = settings.internal_api_secret
+    if secret and request.url.path != "/api/health" and request.method != "OPTIONS":
+        if not hmac.compare_digest(request.headers.get("x-logitrace-key", ""), secret):
+            return JSONResponse({"error": {"status": 401, "message": "Acesso não autorizado"}}, status_code=401)
+    return await call_next(request)
 
 
 @app.middleware("http")

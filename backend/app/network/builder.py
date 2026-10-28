@@ -466,7 +466,4 @@ def _json(v: Any) -> str:
     return json.dumps(v, ensure_ascii=False)
 
 
-def latest_version_id(db: Session) -> int | None:
-    return db.scalar(
-        select(NetworkVersion.id).where(NetworkVersion.status == "ready").order_by(NetworkVersion.id.desc()).limit(1)
-    )
+from app.network.versions import latest_version_id  # noqa: E402,F401

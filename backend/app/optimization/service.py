@@ -14,7 +14,7 @@ from app.core.assumptions import load_assumptions
 from app.core.config import get_settings
 from app.db.base import utcnow
 from app.models import OptimizationRun
-from app.network.builder import latest_version_id
+from app.network.versions import latest_version_id
 from app.network.engine import Metric, ModalMode, NetworkGraph, get_graph
 from app.optimization.data import (
     CandidateSpec,

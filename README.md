@@ -41,7 +41,7 @@ Pré-requisitos: **Node.js ≥ 20**, **Python 3.11**, PowerShell. PostgreSQL é 
 
 O script:
 1. `setup-postgres.ps1` — baixa os binários oficiais do PostgreSQL 17 (EDB) e o bundle PostGIS 3.6 (OSGeo, MD5 verificado) para `.runtime\`, inicializa o cluster na porta **5433** com autenticação SCRAM e senhas geradas, cria `logitrace` e `logitrace_test` com PostGIS e grava `backend\.env`. Nada é instalado como serviço; não requer administrador.
-2. Cria o ambiente Python (`backend\.venv`), instala `requirements.txt` e aplica as migrações Alembic.
+2. Cria o ambiente Python (`backend\.venv`), instala `requirements-dev.txt` (produção + ingestão + testes) e aplica as migrações Alembic.
 3. `python -m app.cli setup` — baixa as bases públicas (IBGE, OurAirports), importa território, instalações, segmentos e fluxos, recalcula agregações e constrói o grafo.
 4. `npm install` no frontend (o `postinstall` copia o worker do MapLibre para `public/`).
 
@@ -53,7 +53,7 @@ Para iniciar depois: `.\scripts\dev.ps1` (banco + API em :8000 + Next.js em :300
 createdb logitrace && createdb logitrace_test
 psql -d logitrace -c "CREATE EXTENSION postgis"; psql -d logitrace_test -c "CREATE EXTENSION postgis"
 cp backend/.env.example backend/.env   # ajuste usuário, senha e porta
-cd backend && python3.11 -m venv .venv && .venv/bin/pip install -r requirements.txt
+cd backend && python3.11 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/alembic upgrade head && .venv/bin/python -m app.cli setup
 .venv/bin/uvicorn app.main:app --port 8000
 cd ../frontend && npm install && npm run dev

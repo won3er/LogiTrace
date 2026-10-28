@@ -78,7 +78,7 @@ def submit(
                 j.error = f"{type(exc).__name__}: {exc}\n{traceback.format_exc(limit=5)}"
                 db.commit()
 
-    if sync:
+    if sync or get_settings().job_mode == "inline":
         run()
     else:
         fut: Future[None] = executor().submit(run)
